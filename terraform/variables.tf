@@ -5,5 +5,5 @@ variable "region" {
 
 variable "cluster_name" {
   description = "provide cluster name"
-  default = "my-cluster"
+  default = "eks-cluster"
 }
