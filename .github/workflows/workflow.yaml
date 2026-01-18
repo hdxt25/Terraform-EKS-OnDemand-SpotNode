@@ -2,9 +2,20 @@ name: "Production IAC"
 
 on:
   workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose action"
+        required: true
+        default: apply
+        type: choice
+        options:
+          - apply
+          - destroy
+
   push:
     branches: [main]
     paths: [terraform/**]
+
   pull_request:
     branches: [main]
     paths: [terraform/**]
@@ -15,9 +26,12 @@ env:
   EKS_CLUSTER: eks-cluster
 
 jobs:
-  terraform:
-    name: Terraform Apply
+# =======================
+# APPLY
+# =======================
+  terraform-apply:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.action == 'apply'
 
     defaults:
       run:
@@ -26,34 +40,46 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.14.0
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Terraform init
-        run: terraform init -backend-config="bucket=$BUCKET_TF_STATE"
-
-      - name: Terraform fmt check
-        run: terraform fmt -check || (echo "❌ Run terraform fmt" && exit 1)
-
-      - name: Terraform validate
-        run: terraform validate
-
-      - name: Terraform plan
-        run: terraform plan -no-color -input=false -out planfile
-
-      - name: Terraform apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve planfile
-
-      - name: Update kubeconfig
+      - run: terraform init -backend-config="bucket=$BUCKET_TF_STATE"
+      - run: terraform fmt -check
+      - run: terraform validate
+      - run: terraform plan -out=planfile
+      - run: terraform apply -auto-approve planfile
         if: github.ref == 'refs/heads/main'
-        run: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+
+# =======================
+# DESTROY (MANUAL CLICK)
+# =======================
+  terraform-destroy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.14.0
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - run: terraform init -backend-config="bucket=$BUCKET_TF_STATE"
+      - run: terraform destroy -auto-approve
