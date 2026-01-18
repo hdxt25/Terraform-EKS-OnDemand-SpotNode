@@ -11,10 +11,10 @@ terraform {
     }
   }
   backend "s3" {
-      bucket         = "dev-tf-bucket-08122025"
-      key            = "my-eks/terraform.tfstate"
-      region         = "us-east-2"
-      use_lockfile   = true
-      encrypt        = true
+    bucket       = "dev-tf-bucket-08122025"
+    key          = "my-eks/terraform.tfstate"
+    region       = "us-east-2"
+    use_lockfile = true
+    encrypt      = true
   }
 }

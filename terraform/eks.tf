@@ -6,9 +6,9 @@ module "eks" {
   kubernetes_version = "1.33"
 
   addons = {
-    coredns                = {}
-    kube-proxy             = {}
-    vpc-cni                = {
+    coredns    = {}
+    kube-proxy = {}
+    vpc-cni = {
       before_compute = true
     }
   }
@@ -26,16 +26,16 @@ module "eks" {
         admin = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy" # Use IAM Role instead of User for better security
           access_scope = {
-            type = "cluster"  # <-- This gives access to the entire cluster
+            type = "cluster" # <-- This gives access to the entire cluster
           }
         }
       }
     }
   }
 
-  vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = module.vpc.private_subnets
-  
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
   # EKS Managed Node Group(s)  
   eks_managed_node_groups = {
     on-demand = {
@@ -73,7 +73,7 @@ module "eks" {
           value  = "true"
           effect = "NO_SCHEDULE"
         }
-      } 
+      }
     }
   }
 }

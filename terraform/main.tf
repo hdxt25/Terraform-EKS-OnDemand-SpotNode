@@ -4,11 +4,11 @@ provider "kubernetes" {
 }
 
 provider "aws" {
-    region = var.region
+  region = var.region
 }
 
 data "aws_availability_zones" "available" {}
 
 locals {
-    cluster_name = var.cluster_name 
+  cluster_name = var.cluster_name
 }
