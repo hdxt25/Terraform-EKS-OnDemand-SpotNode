@@ -3,7 +3,7 @@ name: "Production IAC"
 on:
   workflow_dispatch:
   push:
-    branches: [main, stage]
+    branches: [main]
     paths: [terraform/**]
   pull_request:
     branches: [main]
