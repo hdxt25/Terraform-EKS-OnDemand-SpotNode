@@ -59,8 +59,8 @@ module "eks" {
     }
   }
 }
-  # EKS Managed Node Group(s)  
-  /*eks_managed_node_groups = {
+/*  # EKS Managed Node Group(s)  
+  eks_managed_node_groups = {
     on-demand = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       capacity_type  = "ON_DEMAND"
@@ -97,6 +97,6 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       }
-    }/*
+    }
   }
-}
+}/*
