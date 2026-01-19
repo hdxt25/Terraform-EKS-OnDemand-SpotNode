@@ -19,7 +19,7 @@ module "eks" {
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   # enable_cluster_creator_admin_permissions = true
 
-  /*access_entries = {
+  access_entries = {
     devops-lead = {
       principal_arn = "arn:aws:iam::839087537051:user/devops-user"
       policy_associations = {
@@ -31,7 +31,7 @@ module "eks" {
         }
       }
     }
-  }*/
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -59,7 +59,7 @@ module "eks" {
     }
   }
 }
-/*  # EKS Managed Node Group(s)  
+/*
   eks_managed_node_groups = {
     on-demand = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
@@ -99,4 +99,4 @@ module "eks" {
       }
     }
   }
-}/*
+*/
